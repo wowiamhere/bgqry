@@ -94,10 +94,10 @@ CUSTOM_HEADERS = {
             'user-agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
         }}
 
-proxy_user = 'mr30051PKlo'
-proxy_p = 'MBfnpPDV2Y_country-us_state-california'
-proxy_port = '44443'
-proxy_ip = '91.239.130.17'
+proxy_user = ''
+proxy_p = ''
+proxy_port = ''
+proxy_ip = ''
 proxy = "https://{}:{}:@{}:{}".format( proxy_user, proxy_p, proxy_ip, proxy_port )
 
 class bgfb(scrapy.Spider):
@@ -116,11 +116,9 @@ class bgfb(scrapy.Spider):
 
 
     this_hash = ''
-    pprnt = pprint.PrettyPrinter(indent=3)
 
     def start_requests(self):
-        urls = [ 'https://www.facebook.com/centralcastinglosangeles/' ]
-#        urls = [ 'https://www.cnn.com']
+        urls = [ '' ]
         for url in urls:
             yield scrapy.Request( url=url, meta={ 'dont_merge_cookies':True }, callback=self.parse )
 
@@ -131,22 +129,11 @@ class bgfb(scrapy.Spider):
         pattern = r'"message":{"text"[.]*:"[\W\da-zA-Z]*"}'
         text = response.css('script::text').re_first( pattern )
 
-        print("*************SPIDER--TEXT------------>")
-        pprint.pprint(text)
-        print('*************SPIDER--resp.req.headers------------->')
-        pprint.pprint(response.request.headers)
-
         try:
             data = chompjs.chompjs.parse_js_object( text )
-            print("*************SPIDER---DATA------------>",data)
-
-    #            filename = "bgfb-page.html"
-    #            Path( filename ).write_bytes( response.body )
             self.this_hash = hashlib.sha224( data['text'].encode('utf-8') ).hexdigest()
             CURRENT_HASH = self.this_hash
             CURRENT_POST = data['text']
-            print("*************CURRENT_HASH------------>", CURRENT_HASH)
-            print("*************self.this_hash------------>", self.this_hash)        
         except Exception as e:
             print('*************TEXT ERROR!!!!!!!!!!', e)
 

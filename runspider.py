@@ -21,9 +21,9 @@ def send_mail_txt():
 	try:
 		port = 465
 		smtp_server = 'smtp.mail.yahoo.com'
-		sender_em = 'bgqry@yahoo.com'
-		receiver_em = '3104035883@tmomail.net'
-		psswrd = 'bgfb-password'
+		sender_em = ''
+		receiver_em = ''
+		psswrd = ''
 		msg = "NEW POST!!!!NEW POST!!!"
 
 		message = EmailMessage()
@@ -42,9 +42,9 @@ def send_mail_txt():
 
 
 def send_telegram_alert(msg):
-	token = '6840157065:AAGfHgwuUHdgXHpqUcP7heCwZMM7fjeeCEo'
+	token = ''
 	url = f'https://api.telegram.org/bot{token}'
-	params = { 'chat_id':'6451638522', 'text':msg}
+	params = { 'chat_id':'', 'text':msg}
 
 	resp = requests.get( url + '/sendMessage', params=params )
 	
@@ -60,7 +60,6 @@ def run_spider(spider):
 			new_hash = bgfb_spider.CURRENT_HASH
 			new_post = bgfb_spider.CURRENT_POST
 			process.join()
-			print('----run_spider------OK-new_hash---------->',new_hash)
 			q.put(new_hash)
 			q.put(new_post)
 		except Exception as e:
@@ -79,19 +78,13 @@ while True:
 	try:
 		result = run_spider(bgfb_spider.bgfb)
 
-		print('--------------------RESULT------------>', result[0])
-		print('--------------------STORED_HASH------------>', STORED_HASH)
-
 		if (result[0] != STORED_HASH):
 			send_telegram_alert(f'++++\n{result[1]}\n\n--\nnew:\n{result[0]}\n--\nold:\n{STORED_HASH}\n--{counter}--\n')			
 			STORED_HASH = result[0]
-
-		print('--------------------STORED_HASH------------>', STORED_HASH)
-		print('--------------------COUNTER------------>', counter)
 
 		counter=counter+1
 		time.sleep( random.randrange(61, 92, 1) )
 
 	except Exception as e:
 		print('!!!!!!----->###$$$#EEEEEE----->',e)
-		send_telegram_alert(f'---main while --------ERROR------>{e}')
+		send_telegram_alert(f'---main --------ERROR------>{e}')
